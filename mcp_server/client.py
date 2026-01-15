@@ -98,6 +98,7 @@ class ShopifyClient:
                 logger.error(f"API request failed with status {status_code}: {error_result}")
                 return error_result, status_code
             except Exception as e:
+                status_code = 500
                 message = str(e)
                 error_result = {"error": True, "error_message": message}
                 logger.error(f"Exception raised from the API with params: {params}. Error: {error_result}")
