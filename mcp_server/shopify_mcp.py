@@ -53,6 +53,8 @@ async def search_products(query: str, ctx: Context) -> Union[List[Union[UIResour
         "query": query,
         "context": ""
     }
+    result = {}
+    status_code = 200
     async with ShopifyClient() as api_client:
         result, status_code = await api_client.make_request(tool_name, arguments)
     
@@ -61,7 +63,7 @@ async def search_products(query: str, ctx: Context) -> Union[List[Union[UIResour
         return result
     
     products = json.loads(result['result']['content'][0]['text'])
-    print(f"search_products response: {products['products']} - code: {status_code}")
+    #print(f"search_products response: {products['products']} - code: {status_code}")
 
     if not products['products']:
         return { "search_result": [] }
@@ -100,6 +102,8 @@ async def get_product_details_by_id(product_id: str, ctx: Context) -> Dict[str, 
         "product_id": product_id,
         "context": ""
     }
+    result = {}
+    status_code = 200
     async with ShopifyClient() as api_client:
         result, status_code = await api_client.make_request(tool_name, arguments)
     
@@ -108,7 +112,7 @@ async def get_product_details_by_id(product_id: str, ctx: Context) -> Dict[str, 
         return result
     
     products = json.loads(result['result']['content'][0]['text'])
-    print(f"get_product_details_by_id response: {products['product']} - code: {status_code}")
+    #print(f"get_product_details_by_id response: {products['product']} - code: {status_code}")
 
     return { "search_results": products['product'] }
 
@@ -132,6 +136,8 @@ async def add_to_cart(product_variant_id: str, ctx: Context, cart_id: Optional[s
             }
         ]
     }
+    result = {}
+    status_code = 200
     async with ShopifyClient() as api_client:
         result, status_code = await api_client.make_request(tool_name, arguments)
     
@@ -141,7 +147,7 @@ async def add_to_cart(product_variant_id: str, ctx: Context, cart_id: Optional[s
     
     products = json.loads(result['result']['content'][0]['text'])
     cart = products.get("cart")
-    print(f"create_cart response: {cart} - code: {status_code}")
+    #print(f"create_cart response: {cart} - code: {status_code}")
 
     if cart:
         try:
@@ -178,6 +184,8 @@ async def get_cart(cart_id: str, ctx: Context) -> Union[List[Union[UIResource, D
     arguments = {
         "cart_id": cart_id
     }
+    result = {}
+    status_code = 200
     async with ShopifyClient() as api_client:
         result, status_code = await api_client.make_request(tool_name, arguments)
     
@@ -187,7 +195,7 @@ async def get_cart(cart_id: str, ctx: Context) -> Union[List[Union[UIResource, D
     
     products = json.loads(result['result']['content'][0]['text'])
     cart = products.get("cart")
-    print(f"get_cart response: {cart} - code: {status_code}")
+    #print(f"get_cart response: {cart} - code: {status_code}")
 
     if cart:
         try:
