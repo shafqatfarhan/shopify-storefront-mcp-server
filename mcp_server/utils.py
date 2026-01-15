@@ -188,7 +188,7 @@ def get_products_html(products) -> str:
                         window.parent.postMessage({{
                             type: "tool",
                             payload: {{ 
-                                toolName: "create_cart",
+                                toolName: "add_to_cart",
                                 params: {{ "product_variant_id": product_id }}
                             }}
                         }}, "*");

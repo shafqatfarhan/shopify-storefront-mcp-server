@@ -15,6 +15,7 @@ from starlette.responses import JSONResponse
 
 from mcp_server.client import ShopifyClient
 from mcp_server.utils import setup_logging, get_cart_html, get_products_html
+from mcp_server.middleware import AuthMiddleware
 from mcp_ui_server import create_ui_resource
 from mcp_ui_server.core import UIResource
 from mcp_ui_server.exceptions import InvalidURIError
@@ -34,6 +35,7 @@ mcp = FastMCP(
     auth=None
 )
 
+mcp.add_middleware(AuthMiddleware())
 logger.info(f"MCP server started!")
 
 @mcp.tool(
@@ -44,7 +46,7 @@ logger.info(f"MCP server started!")
         "openWorldHint": False
     }
 )
-async def search_products(query: str, ctx: Context) -> Union[Dict[str, Any], List[UIResource]]:
+async def search_products(query: str, ctx: Context) -> Union[List[Union[UIResource, List[Dict[str, Any]]]], Dict[str, Any]]:
     """Search for Shopify store products by product name or category."""    
     tool_name = "search_shop_catalog"
     arguments = {
@@ -80,7 +82,7 @@ async def search_products(query: str, ctx: Context) -> Union[Dict[str, Any], Lis
             "error": str(e)
         }
 
-    return [interactive_form]
+    return [interactive_form, products['products']]
 
 
 @mcp.tool(
@@ -119,7 +121,7 @@ async def get_product_details_by_id(product_id: str, ctx: Context) -> Dict[str, 
         "openWorldHint": False
     }
 )
-async def add_to_cart(product_variant_id: str, ctx: Context, cart_id: Optional[str] = None, quantity: int = 1) -> Union[Dict[str, Any], List[UIResource]]:
+async def add_to_cart(product_variant_id: str, ctx: Context, cart_id: Optional[str] = None, quantity: int = 1) -> Union[List[Union[UIResource, Dict[str, Any]]], Dict[str, Any]]:
     """Add the product variant to the cart by creating a new Shopify store cart."""    
     tool_name = "update_cart"
     arguments = {
@@ -157,7 +159,7 @@ async def add_to_cart(product_variant_id: str, ctx: Context, cart_id: Optional[s
                 "success": False,
                 "error": str(e)
             }
-        return [interactive_form]
+        return [interactive_form, cart]
     else:
         return { "cart": cart, "error": "Cart creation failed" }
 
@@ -170,7 +172,7 @@ async def add_to_cart(product_variant_id: str, ctx: Context, cart_id: Optional[s
         "openWorldHint": False
     }
 )
-async def get_cart(cart_id: str, ctx: Context) -> Union[Dict[str, Any], List[UIResource]]:
+async def get_cart(cart_id: str, ctx: Context) -> Union[List[Union[UIResource, Dict[str, Any]]], Dict[str, Any]]:
     """Retrieve the Shopify store cart for the current session."""    
     tool_name = "get_cart"
     arguments = {
@@ -203,7 +205,7 @@ async def get_cart(cart_id: str, ctx: Context) -> Union[Dict[str, Any], List[UIR
                 "success": False,
                 "error": str(e)
             }
-        return [interactive_form]
+        return [interactive_form, cart]
     else:
         return { "cart": cart, "error": "No active cart found." }
 
