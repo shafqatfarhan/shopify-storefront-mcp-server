@@ -15,7 +15,6 @@ from starlette.responses import JSONResponse
 
 from mcp_server.client import ShopifyClient
 from mcp_server.utils import setup_logging, get_cart_html, get_products_html
-from mcp_server.middleware import AuthMiddleware
 from mcp_ui_server import create_ui_resource
 from mcp_ui_server.core import UIResource
 from mcp_ui_server.exceptions import InvalidURIError
@@ -35,7 +34,6 @@ mcp = FastMCP(
     auth=None
 )
 
-mcp.add_middleware(AuthMiddleware())
 logger.info(f"MCP server started!")
 
 @mcp.tool(
